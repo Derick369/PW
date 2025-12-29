@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS待办事项管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微软雅黑', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .sub-title {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .auth-section, .todo-section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .auth-section h2, .todo-section h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .btn-secondary {
+            background-color: #666;
+        }
+
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+        }
+
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-item input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .todo-text.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .user-info {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .error-message {
+            color: #f44336;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 3px;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 3px;
+        }
+
+        .toggle-section {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .toggle-section:hover {
+            color: #4CAF50;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .auth-section, .todo-section {
+                padding: 15px;
+            }
+            
+            button {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌟 SaaS待办事项管理系统</h1>
+            <p class="sub-title">这是一个简单的SaaS应用演示 - 多用户待办事项管理工具</p>
+        </header>
+
+        <!-- 用户认证区域 -->
+        <div id="authSection" class="auth-section">
+            <!-- 登录表单 -->
+            <div id="loginForm">
+                <h2>登录系统</h2>
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="loginUsername">用户名:</label>
+                    <input type="text" id="loginUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码:</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码">
+                </div>
+                <button onclick="login()">登录</button>
+                <div class="toggle-section" onclick="toggleAuthForms()">没有账号？点击注册</div>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="registerForm" style="display: none;">
+                <h2>注册账号</h2>
+                <div id="registerError" class="error-message" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="registerUsername">用户名:</label>
+                    <input type="text" id="registerUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">密码:</label>
+                    <input type="password" id="registerPassword" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码:</label>
+                    <input type="password" id="confirmPassword" placeholder="请再次输入密码">
+                </div>
+                <button onclick="register()">注册</button>
+                <div class="toggle-section" onclick="toggleAuthForms()">已有账号？点击登录</div>
+            </div>
+        </div>
+
+        <!-- 待办事项管理区域 -->
+        <div id="todoSection" class="todo-section" style="display: none;">
+            <div class="user-info">
+                <span id="currentUser"></span>
+                <button class="btn-secondary" onclick="logout()">退出登录</button>
+            </div>
+            
+            <h2>我的待办事项</h2>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+            
+            <div class="form-group">
+                <input type="text" id="todoInput" placeholder="输入新的待办事项...">
+                <button onclick="addTodo()" style="margin-top: 10px;">添加待办</button>
+            </div>
+            
+            <div id="todoList">
+                <!-- 待办事项将动态添加到这里 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化localStorage数据
+        if (!localStorage.getItem('saas_todo_users')) {
+            localStorage.setItem('saas_todo_users', JSON.stringify({}));
+        }
+
+        // 当前登录用户
+        let currentUser = null;
+
+        // 注册功能
+        function register() {
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('registerError');
+
+            // 验证输入
+            if (!username || !password || !confirmPassword) {
+                errorDiv.textContent = '请填写所有字段';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorDiv.textContent = '两次输入的密码不一致';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // 获取现有用户
+            const users = JSON.parse(localStorage.getItem('saas_todo_users'));
+
+            // 检查用户名是否已存在
+            if (users[username]) {
+                errorDiv.textContent = '用户名已存在';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // 创建新用户
+            users[username] = {
+                password: password,
+                todos: []
+            };
+
+            // 保存用户数据
+            localStorage.setItem('saas_todo_users', JSON.stringify(users));
+
+            // 注册成功，切换到登录表单
+            showSuccess('注册成功！请登录');
+            toggleAuthForms();
+            
+            // 清空表单
+            document.getElementById('registerUsername').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // 登录功能
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('errorMessage');
+
+            // 验证输入
+            if (!username || !password) {
+                errorDiv.textContent = '请填写用户名和密码';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // 获取现有用户
+            const users = JSON.parse(localStorage.getItem('saas_todo_users'));
+
+            // 检查用户是否存在且密码正确
+            if (!users[username] || users[username].password !== password) {
+                errorDiv.textContent = '用户名或密码错误';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // 登录成功
+            currentUser = username;
+            showTodoSection();
+            loadTodos();
+
+            // 清空表单
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            errorDiv.style.display = 'none';
+        }
+
+        // 退出登录
+        function logout() {
+            currentUser = null;
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('todoSection').style.display = 'none';
+        }
+
+        // 切换登录/注册表单
+        function toggleAuthForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const errorDiv = document.getElementById('errorMessage');
+            const registerError = document.getElementById('registerError');
+
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                registerError.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                errorDiv.style.display = 'none';
+            }
+        }
+
+        // 显示待办事项区域
+        function showTodoSection() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('todoSection').style.display = 'block';
+            document.getElementById('currentUser').textContent = `当前用户：${currentUser}`;
+        }
+
+        // 添加待办事项
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+
+            if (!text) {
+                showError('请输入待办事项内容');
+                return;
+            }
+
+            // 获取用户数据
+            const users = JSON.parse(localStorage.getItem('saas_todo_users'));
+            const user = users[currentUser];
+
+            // 创建新的待办事项
+            const newTodo = {
+                id: Date.now(),
+                text: text,
+                completed: false,
+                createdAt: new Date().toLocaleString()
+            };
+
+            // 添加到用户的待办事项列表
+            user.todos.push(newTodo);
+            users[currentUser] = user;
+
+            // 保存数据
+            localStorage.setItem('saas_todo_users', JSON.stringify(users));
+
+            // 更新界面
+            addTodoToDOM(newTodo);
+            input.value = '';
+            showSuccess('待办事项添加成功！');
+        }
+
+        // 加载待办事项
+        function loadTodos() {
+            const users = JSON.parse(localStorage.getItem('saas_todo_users'));
+            const todos = users[currentUser].todos;
+            const todoList = document.getElementById('todoList');
+
+            // 清空现有列表
+            todoList.innerHTML = '';
+
+            // 添加所有待办事项
+            if (todos.length === 0) {
+                todoList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">🎉 还没有待办事项，点击"添加待办"创建你的第一个待办事项吧！</p>';
+                return;
+            }
+
+            todos.forEach(todo => {
+                addTodoToDOM(todo);
+            });
+        }
+
+        // 将待办事项添加到DOM
+        function addTodoToDOM(todo) {
+            const todoList = document.getElementById('todoList');
+            const todoItem = document.createElement('div');
+            todoItem.className = 'todo-item';
+            todoItem.innerHTML = `
+                <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
+                <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                <button class="btn-danger" onclick="deleteTodo(${todo.id})">删除</button>
+            `;
+            todoList.appendChild(todoItem);
+        }
+
+        // 切换待办事项状态
+        function toggleTodo(id) {
+            const users = JSON.parse(localStorage.getItem('saas_todo_users'));
+            const todos = users[currentUser].todos;
+            const todo = todos.find(t => t.id === id);
+
+            if (todo) {
+                todo.completed = !todo.completed;
+                localStorage.setItem('saas_todo_users', JSON.stringify(users));
+                loadTodos(); // 重新加载列表以更新样式
+            }
+        }
+
+        // 删除待办事项
+        function deleteTodo(id) {
+            if (confirm('确定要删除这个待办事项吗？')) {
+                const users = JSON.parse(localStorage.getItem('saas_todo_users'));
+                const todos = users[currentUser].todos;
+                users[currentUser].todos = todos.filter(t => t.id !== id);
+                localStorage.setItem('saas_todo_users', JSON.stringify(users));
+                loadTodos();
+                showSuccess('待办事项已删除！');
+            }
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // 显示成功消息
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // 页面加载时检查是否有已登录用户
+        window.onload = function() {
+            // 这里可以扩展为记住登录状态的功能
+        };
+    </script>
+</body>
+</html>

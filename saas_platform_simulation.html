@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS平台模拟系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '微软雅黑', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部 */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        /* 卡片样式 */
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        /* 认证区域 */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+        }
+
+        .auth-card {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            flex: 1;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 15px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #667eea;
+        }
+
+        .nav-link.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background-color: #f0f0ff;
+        }
+
+        /* 内容区域 */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* 订阅卡片 */
+        .subscription-plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .plan-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .plan-card.popular {
+            border: 2px solid #667eea;
+            transform: scale(1.05);
+        }
+
+        .plan-card.popular::before {
+            content: "最受欢迎";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .plan-price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+        }
+
+        .plan-price small {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            color: #666;
+        }
+
+        .plan-features li::before {
+            content: "✓ ";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        /* 数据列表 */
+        .data-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .data-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .data-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 管理员面板 */
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: #f0f0ff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: #667eea;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 消息样式 */
+        .message {
+            padding: 12px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .subscription-plans {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-card.popular {
+                transform: none;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* 说明文档 */
+        .documentation {
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .documentation h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .documentation ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .documentation li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 系统消息 -->
+        <div id="systemMessage" class="message"></div>
+
+        <!-- 登录/注册区域 -->
+        <div id="authContainer" class="auth-container">
+            <div class="card auth-card">
+                <div class="card-title">
+                    <div id="authTitle">登录SaaS平台</div>
+                </div>
+                
+                <!-- 登录表单 -->
+                <div id="loginForm" style="display: block;">
+                    <div class="form-group">
+                        <label for="loginUsername">用户名:</label>
+                        <input type="text" id="loginUsername" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">密码:</label>
+                        <input type="password" id="loginPassword" placeholder="请输入密码">
+                    </div>
+                    <button class="btn btn-primary" onclick="login()">登录</button>
+                    <p style="margin-top: 15px; text-align: center;">
+                        还没有账号？ <a href="#" onclick="toggleAuthForms()">立即注册</a>
+                    </p>
+                </div>
+
+                <!-- 注册表单 -->
+                <div id="registerForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="registerUsername">用户名:</label>
+                        <input type="text" id="registerUsername" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">密码:</label>
+                        <input type="password" id="registerPassword" placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">邮箱:</label>
+                        <input type="email" id="registerEmail" placeholder="请输入邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerCompany">公司名称:</label>
+                        <input type="text" id="registerCompany" placeholder="请输入公司名称">
+                    </div>
+                    <button class="btn btn-primary" onclick="register()">注册</button>
+                    <p style="margin-top: 15px; text-align: center;">
+                        已有账号？ <a href="#" onclick="toggleAuthForms()">立即登录</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主应用区域 -->
+        <div id="mainApp" style="display: none;">
+            <!-- 头部 -->
+            <header>
+                <div class="header-content">
+                    <div>
+                        <div class="header-title">🏢 SaaS平台模拟系统</div>
+                        <div class="header-subtitle">演示SaaS的核心特性：多用户、数据隔离、订阅制</div>
+                    </div>
+                    <div class="header-actions">
+                        <span id="currentUserInfo" style="margin-right: 15px; color: white; font-weight: bold;"></span>
+                        <button class="btn btn-secondary" onclick="logout()">退出登录</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 导航栏 -->
+            <nav class="navbar">
+                <ul class="nav-tabs">
+                    <li class="nav-item"><a href="#" class="nav-link active" onclick="showContent('dashboard')">仪表盘</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="showContent('dataManagement')">数据管理</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="showContent('subscription')">我的订阅</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="showContent('settings')">设置</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" onclick="showContent('admin')">管理员后台</a></li>
+                </ul>
+            </nav>
+
+            <!-- 仪表盘 -->
+            <div id="dashboard" class="content-section active">
+                <div class="card">
+                    <div class="card-title">📊 系统仪表盘</div>
+                    <div class="admin-dashboard">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalUsers">0</div>
+                            <div class="stat-label">总用户数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="activeUsers">0</div>
+                            <div class="stat-label">活跃用户</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalData">0</div>
+                            <div class="stat-label">数据总量</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="subscriptionType">免费版</div>
+                            <div class="stat-label">当前订阅</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📋 快速操作</div>
+                    <div class="documentation">
+                        <h3>SaaS平台功能说明：</h3>
+                        <ul>
+                            <li><strong>多用户隔离：</strong>每个用户的数据完全隔离，只能看到自己的数据</li>
+                            <li><strong>订阅系统：</strong>提供不同等级的功能权限，可升级/降级</li>
+                            <li><strong>数据管理：</strong>每个用户可以创建、编辑、删除自己的数据</li>
+                            <li><strong>管理员功能：</strong>管理员可以查看所有用户和数据</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据管理 -->
+            <div id="dataManagement" class="content-section">
+                <div class="card">
+                    <div class="card-title">📁 数据管理</div>
+                    <div class="form-group">
+                        <input type="text" id="dataInput" placeholder="输入新数据项...">
+                        <button class="btn btn-primary" onclick="addDataItem()" style="margin-top: 10px;">添加数据</button>
+                    </div>
+                    <ul id="dataList" class="data-list">
+                        <!-- 数据项将动态添加 -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 订阅管理 -->
+            <div id="subscription" class="content-section">
+                <div class="card">
+                    <div class="card-title">💎 订阅计划</div>
+                    <div class="subscription-plans">
+                        <!-- 免费版 -->
+                        <div class="plan-card">
+                            <h3>免费版</h3>
+                            <div class="plan-price">¥0 <small>/月</small></div>
+                            <ul class="plan-features">
+                                <li>最多10条数据</li>
+                                <li>基本数据管理</li>
+                                <li>标准支持</li>
+                                <li>单用户使用</li>
+                            </ul>
+                            <button class="btn btn-primary" onclick="upgradePlan('free')">当前版本</button>
+                        </div>
+
+                        <!-- 基础版 -->
+                        <div class="plan-card popular">
+                            <h3>基础版</h3>
+                            <div class="plan-price">¥99 <small>/月</small></div>
+                            <ul class="plan-features">
+                                <li>最多100条数据</li>
+                                <li>高级数据管理</li>
+                                <li>优先支持</li>
+                                <li>最多5个用户</li>
+                                <li>数据导出功能</li>
+                            </ul>
+                            <button class="btn btn-primary" onclick="upgradePlan('basic')">升级到基础版</button>
+                        </div>
+
+                        <!-- 专业版 -->
+                        <div class="plan-card">
+                            <h3>专业版</h3>
+                            <div class="plan-price">¥299 <small>/月</small></div>
+                            <ul class="plan-features">
+                                <li>无限数据</li>
+                                <li>高级数据分析</li>
+                                <li>24/7支持</li>
+                                <li>无限用户</li>
+                                <li>API访问权限</li>
+                                <li>数据备份</li>
+                            </ul>
+                            <button class="btn btn-primary" onclick="upgradePlan('professional')">升级到专业版</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 设置 -->
+            <div id="settings" class="content-section">
+                <div class="card">
+                    <div class="card-title">⚙️ 账户设置</div>
+                    <div class="form-group">
+                        <label for="settingsUsername">用户名:</label>
+                        <input type="text" id="settingsUsername" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="settingsEmail">邮箱:</label>
+                        <input type="email" id="settingsEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="settingsCompany">公司名称:</label>
+                        <input type="text" id="settingsCompany">
+                    </div>
+                    <button class="btn btn-primary" onclick="updateSettings()">保存设置</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🗑️ 账户管理</div>
+                    <p style="margin-bottom: 20px; color: #666;">删除账户将永久删除所有数据，此操作不可恢复。</p>
+                    <button class="btn btn-danger" onclick="deleteAccount()">删除账户</button>
+                </div>
+            </div>
+
+            <!-- 管理员后台 -->
+            <div id="admin" class="content-section">
+                <div class="card">
+                    <div class="card-title">👑 管理员控制台</div>
+                    <div id="adminFeatures">
+                        <div class="form-group">
+                            <h3>所有用户列表</h3>
+                            <ul id="allUsersList" class="data-list">
+                                <!-- 用户列表将动态添加 -->
+                            </ul>
+                        </div>
+
+                        <div class="form-group">
+                            <h3>系统数据统计</h3>
+                            <div id="systemStats">
+                                <!-- 系统统计将动态添加 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 使用说明 -->
+            <div class="card">
+                <div class="card-title">📖 使用说明</div>
+                <div class="documentation">
+                    <h3>如何使用这个SaaS平台模拟系统：</h3>
+                    <ol>
+                        <li><strong>注册账号：</strong>点击"立即注册"创建一个新用户账号</li>
+                        <li><strong>登录系统：</strong>使用注册的账号登录SaaS平台</li>
+                        <li><strong>体验数据隔离：</strong>注册多个账号，查看每个账号的数据是否完全隔离</li>
+                        <li><strong>测试订阅功能：</strong>尝试升级/降级订阅计划，观察功能变化</li>
+                        <li><strong>使用管理员功能：</strong>使用管理员账号（admin/admin）登录，查看所有用户和数据</li>
+                    </ol>
+                    
+                    <h3>测试账号推荐：</h3>
+                    <ul>
+                        <li>管理员账号：用户名 <strong>admin</strong>，密码 <strong>admin</strong></li>
+                        <li>测试用户1：用户名 <strong>user1</strong>，密码 <strong>user1</strong></li>
+                        <li>测试用户2：用户名 <strong>user2</strong>，密码 <strong>user2</strong></li>
+                    </ul>
+                    
+                    <h3>SaaS核心特性演示：</h3>
+                    <ul>
+                        <li><strong>多租户架构：</strong>所有用户共享同一个系统，但数据完全隔离</li>
+                        <li><strong>按需付费：</strong>不同订阅计划提供不同功能权限</li>
+                        <li><strong>无需安装：</strong>纯网页访问，无需下载任何软件</li>
+                        <li><strong>自动更新：</strong>系统功能自动更新，用户无需手动操作</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化localStorage
+        if (!localStorage.getItem('saas_platform_users')) {
+            localStorage.setItem('saas_platform_users', JSON.stringify({
+                'admin': {
+                    username: 'admin',
+                    password: 'admin',
+                    email: 'admin@saas.com',
+                    company: '管理员',
+                    role: 'admin',
+                    subscription: 'professional',
+                    data: [],
+                    createdAt: new Date().toLocaleString()
+                },
+                'user1': {
+                    username: 'user1',
+                    password: 'user1',
+                    email: 'user1@example.com',
+                    company: '测试公司1',
+                    role: 'user',
+                    subscription: 'free',
+                    data: ['用户1的数据1', '用户1的数据2'],
+                    createdAt: new Date().toLocaleString()
+                },
+                'user2': {
+                    username: 'user2',
+                    password: 'user2',
+                    email: 'user2@example.com',
+                    company: '测试公司2',
+                    role: 'user',
+                    subscription: 'free',
+                    data: ['用户2的数据1', '用户2的数据2', '用户2的数据3'],
+                    createdAt: new Date().toLocaleString()
+                }
+            }));
+        }
+
+        // 当前登录用户
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('saas_platform_users'));
+
+        // 显示系统消息
+        function showMessage(message, type = 'info') {
+            const msgDiv = document.getElementById('systemMessage');
+            msgDiv.textContent = message;
+            msgDiv.className = `message ${type} show`;
+            
+            setTimeout(() => {
+                msgDiv.classList.remove('show');
+            }, 3000);
+        }
+
+        // 切换登录/注册表单
+        function toggleAuthForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const authTitle = document.getElementById('authTitle');
+
+            if (loginForm.style.display === 'block') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                authTitle.textContent = '注册SaaS平台';
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                authTitle.textContent = '登录SaaS平台';
+            }
+        }
+
+        // 注册功能
+        function register() {
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const email = document.getElementById('registerEmail').value.trim();
+            const company = document.getElementById('registerCompany').value.trim();
+
+            if (!username || !password || !email || !company) {
+                showMessage('请填写所有字段', 'error');
+                return;
+            }
+
+            if (users[username]) {
+                showMessage('用户名已存在', 'error');
+                return;
+            }
+
+            // 创建新用户
+            users[username] = {
+                username: username,
+                password: password,
+                email: email,
+                company: company,
+                role: 'user',
+                subscription: 'free',
+                data: [],
+                createdAt: new Date().toLocaleString()
+            };
+
+            // 保存用户数据
+            localStorage.setItem('saas_platform_users', JSON.stringify(users));
+            showMessage('注册成功！请登录', 'success');
+            toggleAuthForms();
+
+            // 清空表单
+            document.getElementById('registerUsername').value = '';
+            document.getElementById('registerPassword').value = '';
+            document.getElementById('registerEmail').value = '';
+            document.getElementById('registerCompany').value = '';
+        }
+
+        // 登录功能
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                showMessage('请填写用户名和密码', 'error');
+                return;
+            }
+
+            if (!users[username] || users[username].password !== password) {
+                showMessage('用户名或密码错误', 'error');
+                return;
+            }
+
+            // 登录成功
+            currentUser = users[username];
+            showMessage('登录成功！', 'success');
+
+            // 显示主应用
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+
+            // 更新界面
+            updateUI();
+        }
+
+        // 退出登录
+        function logout() {
+            currentUser = null;
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // 切换内容区域
+        function showContent(sectionId) {
+            // 更新导航链接
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 更新内容区域
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            // 更新界面
+            updateUI();
+        }
+
+        // 更新UI
+        function updateUI() {
+            if (!currentUser) return;
+
+            // 更新用户信息
+            document.getElementById('currentUserInfo').textContent = `欢迎，${currentUser.username} (${currentUser.company})`;
+
+            // 更新仪表盘
+            updateDashboard();
+
+            // 更新数据管理
+            updateDataList();
+
+            // 更新设置
+            updateSettingsForm();
+
+            // 更新管理员控制台
+            updateAdminConsole();
+        }
+
+        // 更新仪表盘
+        function updateDashboard() {
+            const totalUsers = Object.keys(users).length;
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('activeUsers').textContent = totalUsers;
+            document.getElementById('totalData').textContent = currentUser.data.length;
+            
+            const planNames = {
+                'free': '免费版',
+                'basic': '基础版',
+                'professional': '专业版'
+            };
+            document.getElementById('subscriptionType').textContent = planNames[currentUser.subscription];
+        }
+
+        // 更新数据列表
+        function updateDataList() {
+            const dataList = document.getElementById('dataList');
+            dataList.innerHTML = '';
+
+            if (currentUser.data.length === 0) {
+                dataList.innerHTML = '<li style="text-align: center; padding: 30px; color: #666;">还没有数据，点击"添加数据"创建第一条数据</li>';
+                return;
+            }
+
+            currentUser.data.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'data-item';
+                li.innerHTML = `
+                    <span>${item}</span>
+                    <div>
+                        <button class="btn btn-secondary" onclick="editDataItem(${index})">编辑</button>
+                        <button class="btn btn-danger" onclick="deleteDataItem(${index})">删除</button>
+                    </div>
+                `;
+                dataList.appendChild(li);
+            });
+        }
+
+        // 添加数据项
+        function addDataItem() {
+            const input = document.getElementById('dataInput');
+            const text = input.value.trim();
+
+            if (!text) {
+                showMessage('请输入数据内容', 'error');
+                return;
+            }
+
+            // 检查订阅限制
+            const maxData = {
+                'free': 10,
+                'basic': 100,
+                'professional': Infinity
+            };
+
+            if (currentUser.data.length >= maxData[currentUser.subscription]) {
+                showMessage(`免费版最多只能添加${maxData[currentUser.subscription]}条数据，请升级订阅计划`, 'error');
+                return;
+            }
+
+            // 添加数据
+            currentUser.data.push(text);
+            saveUserData();
+            updateDataList();
+            input.value = '';
+            showMessage('数据添加成功！', 'success');
+        }
+
+        // 编辑数据项
+        function editDataItem(index) {
+            const newText = prompt('编辑数据项:', currentUser.data[index]);
+            if (newText !== null && newText.trim() !== '') {
+                currentUser.data[index] = newText.trim();
+                saveUserData();
+                updateDataList();
+                showMessage('数据更新成功！', 'success');
+            }
+        }
+
+        // 删除数据项
+        function deleteDataItem(index) {
+            if (confirm('确定要删除这条数据吗？')) {
+                currentUser.data.splice(index, 1);
+                saveUserData();
+                updateDataList();
+                showMessage('数据删除成功！', 'success');
+            }
+        }
+
+        // 更新订阅计划
+        function upgradePlan(plan) {
+            if (currentUser.subscription === plan) {
+                showMessage('您当前已经是' + (plan === 'free' ? '免费版' : (plan === 'basic' ? '基础版' : '专业版')) + '用户', 'info');
+                return;
+            }
+
+            // 检查数据限制
+            const maxData = {
+                'free': 10,
+                'basic': 100,
+                'professional': Infinity
+            };
+
+            if (currentUser.data.length > maxData[plan]) {
+                showMessage(`降级到${plan === 'free' ? '免费版' : '基础版'}将导致数据超过限制，请先删除部分数据`, 'error');
+                return;
+            }
+
+            // 更新订阅
+            currentUser.subscription = plan;
+            saveUserData();
+            updateDashboard();
+            showMessage('订阅计划更新成功！', 'success');
+        }
+
+        // 更新设置表单
+        function updateSettingsForm() {
+            document.getElementById('settingsUsername').value = currentUser.username;
+            document.getElementById('settingsEmail').value = currentUser.email;
+            document.getElementById('settingsCompany').value = currentUser.company;
+        }
+
+        // 保存设置
+        function updateSettings() {
+            const email = document.getElementById('settingsEmail').value.trim();
+            const company = document.getElementById('settingsCompany').value.trim();
+
+            if (!email || !company) {
+                showMessage('请填写所有字段', 'error');
+                return;
+            }
+
+            currentUser.email = email;
+            currentUser.company = company;
+            saveUserData();
+            showMessage('设置保存成功！', 'success');
+        }
+
+        // 删除账户
+        function deleteAccount() {
+            if (confirm('确定要删除账户吗？此操作将永久删除所有数据，不可恢复！')) {
+                delete users[currentUser.username];
+                saveAllUsers();
+                logout();
+                showMessage('账户已删除！', 'success');
+            }
+        }
+
+        // 更新管理员控制台
+        function updateAdminConsole() {
+            if (currentUser.role !== 'admin') {
+                document.getElementById('adminFeatures').innerHTML = '<p style="text-align: center; color: #dc3545; padding: 30px;">您没有管理员权限</p>';
+                return;
+            }
+
+            // 更新用户列表
+            const usersList = document.getElementById('allUsersList');
+            usersList.innerHTML = '';
+
+            Object.values(users).forEach(user => {
+                const li = document.createElement('li');
+                li.className = 'data-item';
+                li.innerHTML = `
+                    <div>
+                        <strong>${user.username}</strong> (${user.role})
+                        <br><small>公司: ${user.company} | 订阅: ${user.subscription} | 数据: ${user.data.length}条</small>
+                    </div>
+                    <div>
+                        <span class="btn btn-secondary" onclick="viewUserDetails('${user.username}')" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;">查看详情</span>
+                    </div>
+                `;
+                usersList.appendChild(li);
+            });
+
+            // 更新系统统计
+            let totalData = 0;
+            let totalFreeUsers = 0;
+            let totalBasicUsers = 0;
+            let totalProUsers = 0;
+
+            Object.values(users).forEach(user => {
+                totalData += user.data.length;
+                switch(user.subscription) {
+                    case 'free': totalFreeUsers++;
+                    break;
+                    case 'basic': totalBasicUsers++;
+                    break;
+                    case 'professional': totalProUsers++;
+                    break;
+                }
+            });
+
+            const systemStats = document.getElementById('systemStats');
+            systemStats.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                    <div style="background-color: #f0f0ff; padding: 15px; border-radius: 5px; text-align: center;">
+                        <strong>总数据量:</strong> ${totalData}条
+                    </div>
+                    <div style="background-color: #f0f0ff; padding: 15px; border-radius: 5px; text-align: center;">
+                        <strong>免费版用户:</strong> ${totalFreeUsers}个
+                    </div>
+                    <div style="background-color: #f0f0ff; padding: 15px; border-radius: 5px; text-align: center;">
+                        <strong>基础版用户:</strong> ${totalBasicUsers}个
+                    </div>
+                    <div style="background-color: #f0f0ff; padding: 15px; border-radius: 5px; text-align: center;">
+                        <strong>专业版用户:</strong> ${totalProUsers}个
+                    </div>
+                </div>
+            `;
+        }
+
+        // 查看用户详情
+        function viewUserDetails(username) {
+            const user = users[username];
+            if (!user) return;
+
+            let details = `用户详情：\n\n`;
+            details += `用户名: ${user.username}\n`;
+            details += `邮箱: ${user.email}\n`;
+            details += `公司: ${user.company}\n`;
+            details += `角色: ${user.role}\n`;
+            details += `订阅: ${user.subscription}\n`;
+            details += `注册时间: ${user.createdAt}\n`;
+            details += `数据量: ${user.data.length}条\n\n`;
+            details += `数据列表:\n`;
+            user.data.forEach((item, index) => {
+                details += `${index + 1}. ${item}\n`;
+            });
+
+            alert(details);
+        }
+
+        // 保存用户数据
+        function saveUserData() {
+            users[currentUser.username] = currentUser;
+            saveAllUsers();
+        }
+
+        // 保存所有用户数据
+        function saveAllUsers() {
+            localStorage.setItem('saas_platform_users', JSON.stringify(users));
+        }
+    </script>
+</body>
+</html>

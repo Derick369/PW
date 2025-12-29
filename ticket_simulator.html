@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抢票系统模拟器</title>
+    <link rel="stylesheet" href="ticket_simulator.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎫 抢票系统模拟器</h1>
+        <p class="subtitle">这是一个模拟抢票过程的演示网站，仅用于教学目的</p>
+
+        <!-- 登录界面 -->
+        <div id="loginSection" class="section">
+            <h2>用户登录</h2>
+            <div class="form-group">
+                <label for="username">用户名：</label>
+                <input type="text" id="username" placeholder="请输入用户名" value="demo_user">
+            </div>
+            <div class="form-group">
+                <label for="password">密码：</label>
+                <input type="password" id="password" placeholder="请输入密码" value="demo_pass">
+            </div>
+            <button id="loginBtn" class="btn btn-primary">登录</button>
+        </div>
+
+        <!-- 抢票界面 -->
+        <div id="ticketSection" class="section" style="display: none;">
+            <div class="event-info">
+                <h2>🎤 2025年跨年演唱会</h2>
+                <p><strong>时间：</strong>2025年12月31日 20:00</p>
+                <p><strong>地点：</strong>北京国家体育场（鸟巢）</p>
+            </div>
+
+            <div class="ticket-types">
+                <div class="ticket-card" data-type="vip">
+                    <h3>VIP票</h3>
+                    <p class="price">¥2888</p>
+                    <div class="availability">
+                        <span class="status" id="vipStatus">暂无票</span>
+                        <span class="count" id="vipCount">0张</span>
+                    </div>
+                    <button class="btn btn-buy" data-type="vip">立即抢购</button>
+                </div>
+
+                <div class="ticket-card" data-type="ordinary">
+                    <h3>普通票</h3>
+                    <p class="price">¥888</p>
+                    <div class="availability">
+                        <span class="status" id="ordinaryStatus">暂无票</span>
+                        <span class="count" id="ordinaryCount">0张</span>
+                    </div>
+                    <button class="btn btn-buy" data-type="ordinary">立即抢购</button>
+                </div>
+            </div>
+
+            <!-- 自动抢票控制面板 -->
+            <div class="auto-buy-panel">
+                <h3>🤖 自动抢票设置</h3>
+                <div class="form-group">
+                    <label for="autoBuyType">选择票种：</label>
+                    <select id="autoBuyType">
+                        <option value="vip">VIP票</option>
+                        <option value="ordinary">普通票</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="refreshInterval">刷新间隔（秒）：</label>
+                    <input type="number" id="refreshInterval" min="1" max="10" value="2">
+                </div>
+                <div class="auto-buy-buttons">
+                    <button id="startAutoBuy" class="btn btn-success">开始自动抢票</button>
+                    <button id="stopAutoBuy" class="btn btn-danger" disabled>停止自动抢票</button>
+                </div>
+            </div>
+
+            <!-- 高级抢票策略：预占+秒付 -->
+            <div class="advanced-strategy-panel">
+                <h3>⚡ 高级策略：预占+秒付</h3>
+                <div class="strategy-info">
+                    <p><strong>策略原理：</strong>提前完成购票流程，只等开票瞬间提交付款</p>
+                    <p><strong>优势：</strong>减少80%操作步骤，毫秒级响应，大幅提高成功率</p>
+                </div>
+                <div class="form-group">
+                    <label for="preorderType">预占票种：</label>
+                    <select id="preorderType">
+                        <option value="vip">VIP票</option>
+                        <option value="ordinary">普通票</option>
+                    </select>
+                </div>
+                <div class="advanced-buttons">
+                    <button id="preorderBtn" class="btn btn-info">预占订单</button>
+                    <button id="instantPayBtn" class="btn btn-warning" disabled>秒付</button>
+                    <button id="cancelPreorderBtn" class="btn btn-secondary" disabled>取消预占</button>
+                </div>
+                <div class="preorder-status" id="preorderStatus" style="margin-top: 15px; color: #6c757d;">
+                    未预占任何订单
+                </div>
+            </div>
+        </div>
+
+        <!-- 消息通知区域 -->
+        <div id="messageArea" class="message-area"></div>
+
+        <!-- 系统日志 -->
+        <div class="log-section">
+            <h3>📋 系统日志</h3>
+            <div id="logContainer" class="log-container"></div>
+        </div>
+    </div>
+
+    <script src="ticket_simulator.js"></script>
+</body>
+</html>
